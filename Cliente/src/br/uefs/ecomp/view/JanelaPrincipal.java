@@ -19,7 +19,7 @@ public class JanelaPrincipal {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) { 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -66,17 +66,18 @@ public class JanelaPrincipal {
 		btnEscolher.setBounds(344, 221, 121, 23);
 		frame.getContentPane().add(btnEscolher);
 		
+		JButton btnNewButton = new JButton("Comprar");
+		btnNewButton.setBounds(748, 188, 89, 23);
+		frame.getContentPane().add(btnNewButton);
+		
 		JButton btnReservar = new JButton("Reservar");
 		btnReservar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 			}
 		});
-		btnReservar.setBounds(748, 188, 89, 23);
+		btnReservar.setBounds(748, 222, 89, 23);
 		frame.getContentPane().add(btnReservar);
-		
-		JButton btnNewButton = new JButton("Comprar");
-		btnNewButton.setBounds(748, 222, 89, 23);
-		frame.getContentPane().add(btnNewButton);
 		
 		JButton btnDesistir = new JButton("Desistir");
 		btnDesistir.setBounds(748, 256, 89, 23);
