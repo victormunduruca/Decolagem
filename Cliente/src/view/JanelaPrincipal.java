@@ -1,97 +1,191 @@
 package view;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JList;
 import java.awt.BorderLayout;
-import javax.swing.JLabel;
-import java.awt.Font;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Vector;
+
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.table.DefaultTableModel;
 
-public class JanelaPrincipal {
+import org.pushingpixels.substance.api.skin.SubstanceNebulaBrickWallLookAndFeel;
 
-	private JFrame frame;
+public class JanelaPrincipal extends JFrame { 
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) { 
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					JanelaPrincipal window = new JanelaPrincipal();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
+	public interface Listener { // TODO
+		void onCompra();
+		void onReserva();
+	}
+
+	private JTable tabelaPassagens, tabelaCarrinho;
+
+	private Vector<String> colunas = new Vector<String>();
+    private Vector<Vector> passagens = new Vector<Vector>();
+    private Vector<Vector> carrinho = new Vector<Vector>();
+
+	private DefaultTableModel modelPassanges, modelCarrinho;
+	
+	private Listener listener;
+
+	public JanelaPrincipal(Listener listener) {
+		super("Decolar @ Passagens Aéreas");
+		iniciar();
+	}
+
+	private void iniciar() {
+		
+		carregar();
+		
+		setLookAndFeel();
+
+		JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		toolbar.add(new JButton("Comprar"));
+		toolbar.add(new JButton("Reservar"));
+
+		getContentPane().add(toolbar, BorderLayout.NORTH);
+
+		JPanel painel = new JPanel();
+		painel.setLayout(new GridLayout(1, 2));
+
+		modelPassanges = new DefaultTableModel(passagens, colunas) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+
+		modelCarrinho = new DefaultTableModel(carrinho, colunas) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+
+		tabelaPassagens = new JTable(modelPassanges);
+		//tabelaPassagens.setRowSelectionAllowed(true);
+		//tabelaPassagens.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		//tabelaPassagens.setRowSelectionAllowed(true);
+
+		tabelaCarrinho = new JTable(modelCarrinho);
+
+		JScrollPane scrollPassagens = new JScrollPane(tabelaPassagens);
+		scrollPassagens.setBorder(BorderFactory.createTitledBorder("Passagens"));
+		painel.add(scrollPassagens);
+
+		JScrollPane scrollCarrinho = new JScrollPane(tabelaCarrinho);
+		scrollCarrinho.setBorder(BorderFactory.createTitledBorder("Carrinho de compras"));
+		painel.add(scrollCarrinho);
+
+		getContentPane().add(painel, BorderLayout.CENTER);
+
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setSize(550, 550);
+		setVisible(true);
+
+		setListeners();
+	}
+
+	private void setListeners() {
+		tabelaPassagens.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					int index = tabelaPassagens.getSelectedRow();
+					
+					System.out.print("Companhia: " + tabelaPassagens.getModel().getValueAt(index, 0));
+					System.out.print("|Orig: " + tabelaPassagens.getModel().getValueAt(index, 1));
+					System.out.println("|Dest: " + tabelaPassagens.getModel().getValueAt(index, 2));
+					
+					carrinho.add(toRow(
+						"" + tabelaPassagens.getModel().getValueAt(index, 0),
+						"" + tabelaPassagens.getModel().getValueAt(index, 1),
+						"" + tabelaPassagens.getModel().getValueAt(index, 2)
+						)
+					);
+					modelCarrinho.fireTableDataChanged(); // Notificar a mudanca da tabela 
 				}
 			}
 		});
 	}
 
-	/**
-	 * Create the application.
-	 */
-	public JanelaPrincipal() {
-		initialize();
+	// Fixar bug: https://github.com/Insubstantial/insubstantial/issues/56#issuecomment-7175469
+	private void setLookAndFeel() {
+        try {
+
+            JFrame.setDefaultLookAndFeelDecorated(true);
+            UIManager.setLookAndFeel(new SubstanceNebulaBrickWallLookAndFeel());
+        } catch (Exception e) {
+            e.getStackTrace();
+        }
+
+        try {
+            JFrame.setDefaultLookAndFeelDecorated(true);
+            UIManager.setLookAndFeel(new SubstanceNebulaBrickWallLookAndFeel());
+        } catch (Exception e) {
+            e.getStackTrace();
+        }
+	}
+	
+	private Vector<String> toRow(String c, String o, String d) {
+	    Vector<String> v = new Vector<String>();
+	    v.addElement(c);
+	    v.addElement(o);
+	    v.addElement(d);
+	    return v;
+	}
+	
+	public void carregar() {
+		// Header
+	    colunas.addElement("Companhia");
+	    colunas.addElement("Origem");
+	    colunas.addElement("Destino");
+		
+		// Passagens
+	    Vector<String> p1 = new Vector<String>();
+	    p1.addElement("Azul");
+	    p1.addElement("Bahia");
+	    p1.addElement("Rio de Janeiro");
+	    passagens.add(p1);
+	    
+	    Vector<String> p2 = new Vector<String>();
+	    p2.addElement("Rosa");
+	    p2.addElement("São Paulo");
+	    p2.addElement("Acre");
+	    passagens.add(p2);
+	    
+	    Vector<String> p3 = new Vector<String>();
+	    p3.addElement("Verde");
+	    p3.addElement("Ceará");
+	    p3.addElement("Espírito Santo");
+	    passagens.add(p3);
+	    
+	    Vector<String> p4 = new Vector<String>();
+	    p4.addElement("Amarelo");
+	    p4.addElement("Ceará");
+	    p4.addElement("Brasília Santo");
+	    passagens.add(p4);
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 884, 506);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
-		
-		JLabel lblTrechos = new JLabel("Trechos ");
-		lblTrechos.setFont(new Font("Tahoma", Font.PLAIN, 23));
-		lblTrechos.setBounds(186, 38, 90, 31);
-		frame.getContentPane().add(lblTrechos);
-		
-		JLabel lblCarrinho = new JLabel("Carrinho");
-		lblCarrinho.setFont(new Font("Tahoma", Font.PLAIN, 23));
-		lblCarrinho.setBounds(526, 38, 90, 31);
-		frame.getContentPane().add(lblCarrinho);
-		
-		JButton btnEscolher = new JButton("Escolher ->");
-		btnEscolher.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				JanelaPrincipal janela = new JanelaPrincipal(new Listener() {
+					@Override
+					public void onReserva() { }
+					
+					@Override
+					public void onCompra() { }
+				});
 			}
 		});
-		btnEscolher.setBounds(344, 221, 121, 23);
-		frame.getContentPane().add(btnEscolher);
-		
-		JButton btnNewButton = new JButton("Comprar");
-		btnNewButton.setBounds(748, 188, 89, 23);
-		frame.getContentPane().add(btnNewButton);
-		
-		JButton btnReservar = new JButton("Reservar");
-		btnReservar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-			}
-		});
-		btnReservar.setBounds(748, 222, 89, 23);
-		frame.getContentPane().add(btnReservar);
-		
-		JButton btnDesistir = new JButton("Desistir");
-		btnDesistir.setBounds(748, 256, 89, 23);
-		frame.getContentPane().add(btnDesistir);
-		//String[] data = {""+10,""+20,""+30,""+40,""+50,""+60,""+71,""+80,""+90,""+91};
-		// JList<String> myList = new JList<String>(data);
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(144, 94, 174, 307);
-	//	scrollPane.setViewportView(myList);
-		frame.getContentPane().add(scrollPane);
-		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(484, 94, 174, 307);
-		frame.getContentPane().add(scrollPane_1);
-		
 	}
 }
