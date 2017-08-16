@@ -1,4 +1,4 @@
-package br.uefs.ecomp.view;
+package view;
 
 import java.awt.EventQueue;
 
