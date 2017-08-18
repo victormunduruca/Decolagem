@@ -22,8 +22,8 @@ public class Companhia {
 	public void setTrechos(ArrayList<Trecho> trechos) {
 		this.trechos = trechos;
 	}
-	public void addNovoTrecho(String inicio, String fim, int lugares) {
-		trechos.add(new Trecho(inicio, fim, lugares));
+	public void addNovoTrecho(String inicio, String fim) {
+		trechos.add(new Trecho(inicio, fim));
 	}
 	
 }

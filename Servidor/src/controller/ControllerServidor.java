@@ -39,7 +39,7 @@ private static Companhia companhia;
 	public void setarTrechos(String[] trechos) {
 		for(int i = 0; i < trechos.length; i++) {
 			String[] infoTrechos = trechos[i].split("-");
-			companhia.addNovoTrecho(infoTrechos[0], infoTrechos[1], Integer.valueOf(infoTrechos[2]));
+			companhia.addNovoTrecho(infoTrechos[0], infoTrechos[1]);
 		}
 	}
 	public static void main(String[] args) throws IOException {
