@@ -35,7 +35,6 @@ public class Trecho implements Serializable{
 	public void setLugares(int lugares) {
 		this.lugares = lugares;
 	}
-	
 	@Override
 	public String toString() {
 		return inicio +"-"+fim+" Lugares: " + lugares;

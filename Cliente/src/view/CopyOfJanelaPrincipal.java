@@ -19,8 +19,6 @@ import javax.swing.table.TableModel;
 public class CopyOfJanelaPrincipal {
 
 	private JFrame frame;
-	
-	private Object columnNames[] = { "Companhia", "Origem", "Destino"};
 
 	/**
 	 * Launch the application.
@@ -88,24 +86,12 @@ public class CopyOfJanelaPrincipal {
 		JButton btnDesistir = new JButton("Desistir");
 		btnDesistir.setBounds(748, 256, 89, 23);
 		frame.getContentPane().add(btnDesistir);
-		
 		//String[] data = {""+10,""+20,""+30,""+40,""+50,""+60,""+71,""+80,""+90,""+91};
 		// JList<String> myList = new JList<String>(data);
-		
-		//JScrollPane scrollPane = new JScrollPane();
-		
-		Object rowData[][] = { 
-				{ "Row1-Column1", "Row1-Column2", "Row1-Column3"},
-                { "Row2-Column1", "Row2-Column2", "Row2-Column3"} 
-		};
-		
-		TableModel model = new DefaultTableModel(rowData, columnNames);
-		JTable table = new JTable(model);
-		//scrollPane.add(new JButton("TEXT"));
-		
-		table.setBounds(144, 94, 174, 307);
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(144, 94, 174, 307);
 	//	scrollPane.setViewportView(myList);
-		frame.getContentPane().add(table);
+		frame.getContentPane().add(scrollPane);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setBounds(484, 94, 174, 307);

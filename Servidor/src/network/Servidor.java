@@ -1,13 +1,27 @@
 package network;
 
+import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+
+import controller.ControllerServidor;
+import model.Trecho;
 
 public class Servidor extends UnicastRemoteObject implements IRemoto {
+	
+	private ControllerServidor controller;
 
 	public Servidor() throws RemoteException {
 		super();
+		controller = new ControllerServidor();
+		try {
+			controller.configuraServidor();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public String teste(String str) throws RemoteException {
@@ -18,7 +32,9 @@ public class Servidor extends UnicastRemoteObject implements IRemoto {
 	public boolean iniciar() {
 	    try {
 	
-	        Naming.rebind("//localhost/MyServer", new Servidor());
+	    	System.setProperty("java.rmi.server.hostname", "192.168.1.8");
+			LocateRegistry.createRegistry(1099);
+			Naming.bind("DecolagemService", this);
 	        System.out.println(" --- Servidor Iniciado --- ");
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -26,5 +42,13 @@ public class Servidor extends UnicastRemoteObject implements IRemoto {
 	
 	    }
 	    return true;
+	}
+
+	@Override
+	public ArrayList<Trecho> getTrechos() throws RemoteException {
+//		ArrayList<String> str = new ArrayList<String>();
+//		str.add("BA-AR");
+//		str.add("BSB-SSA");
+		return controller.getCompanhia().getTrechos();
 	}
 }
