@@ -9,7 +9,7 @@ public class Trecho implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private String inicio;
 	private String fim;
-	
+
 	
 	public Trecho(String inicio, String fim) {
 		this.inicio = inicio;
@@ -28,9 +28,9 @@ public class Trecho implements Serializable{
 	public void setFim(String fim) {
 		this.fim = fim;
 	}
-	
+
 	@Override
 	public String toString() {
-		return inicio +"-"+fim;
+		return inicio +"->"+fim;
 	}
 }
