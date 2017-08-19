@@ -8,6 +8,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
 import controller.ControllerServidor;
+import model.Companhia;
 import model.Trecho;
 
 public class Servidor extends UnicastRemoteObject implements IRemoto {
@@ -45,10 +46,8 @@ public class Servidor extends UnicastRemoteObject implements IRemoto {
 	}
 
 	@Override
-	public ArrayList<Trecho> getTrechos() throws RemoteException {
-//		ArrayList<String> str = new ArrayList<String>();
-//		str.add("BA-AR");
-//		str.add("BSB-SSA");
-		return controller.getCompanhia().getTrechos();
+	public Companhia getCompanhia() throws RemoteException {
+		return controller.getCompanhia();
 	}
+
 }

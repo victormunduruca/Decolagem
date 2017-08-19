@@ -52,7 +52,7 @@ public class Main{
 		public void onRecarregar() {
 			// TODO Auto-generated method stub
 			try {
-				janela.setTexto(lookUp.teste("olar"));
+				janela.atualizaTrechos(lookUp.getCompanhia());
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -4,12 +4,13 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
+import model.Companhia;
 import model.Trecho;
 
 public interface IRemoto extends Remote {
 	
     public String teste(String str) throws RemoteException;
 
-	ArrayList<Trecho> getTrechos() throws RemoteException;
+    public Companhia getCompanhia() throws RemoteException;
     
 }
