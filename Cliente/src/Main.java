@@ -62,13 +62,11 @@ public class Main{
 		
 	}
 	public static void main(String[] args) throws NotBoundException, NumberFormatException, IOException {
-		System.out.println("Insira a porta");
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		int porta = Integer.parseInt(br.readLine());
-		System.out.println("Insira o nome do serviço");
+		System.out.println("Insira o id do serviço");
 		String nome = br.readLine();
 		
-		lookUp = (IRemoto) Naming.lookup("rmi://192.168.1.8:"+porta+"/"+nome);
+		lookUp = (IRemoto) Naming.lookup("127.0.0.1/Decolagem"+nome);
 		Main main = new Main();
 	}
 }
