@@ -91,7 +91,7 @@ public class JanelaPrincipal extends JFrame {
 		setSize(550, 550);
 		setVisible(true);
 
-		setListeners();
+		setListeners(); 
 	}
 
 	private void setListeners() {
