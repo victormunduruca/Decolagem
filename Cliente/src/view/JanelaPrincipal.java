@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -17,6 +18,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
 
+import model.Trecho;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JLabel;
+
 //import org.pushingpixels.substance.api.skin.SubstanceNebulaBrickWallLookAndFeel;
 
 public class JanelaPrincipal extends JFrame { 
@@ -24,6 +31,7 @@ public class JanelaPrincipal extends JFrame {
 	public interface Listener { // TODO
 		void onCompra();
 		void onReserva();
+		void onRecarregar();
 	}
 
 	private JTable tabelaPassagens, tabelaCarrinho;
@@ -38,9 +46,11 @@ public class JanelaPrincipal extends JFrame {
 
 	public JanelaPrincipal(Listener listener) {
 		super("Decolar @ Passagens Aéreas");
+		this.listener = listener;
 		iniciar();
 	}
-
+	//XXX
+	JLabel lblNewLabel;
 	private void iniciar() {
 		
 		carregar();
@@ -52,6 +62,16 @@ public class JanelaPrincipal extends JFrame {
 		toolbar.add(new JButton("Reservar"));
 
 		getContentPane().add(toolbar, BorderLayout.NORTH);
+		
+		JButton btnRecarregar = new JButton("Recarregar");
+		btnRecarregar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				listener.onRecarregar();
+			}
+		});
+		toolbar.add(btnRecarregar);
+		
+		
 
 		JPanel painel = new JPanel();
 		painel.setLayout(new GridLayout(1, 2));
@@ -90,10 +110,18 @@ public class JanelaPrincipal extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(550, 550);
 		setVisible(true);
-
+		
+		lblNewLabel = new JLabel("New label");
+		toolbar.add(lblNewLabel);
+		
 		setListeners();
 	}
-
+	
+	//XXX
+	public void setTexto(String texto) {
+		System.out.println("Setou o texto: " +texto);
+		lblNewLabel.setText(texto);;
+	}
 	private void setListeners() {
 		tabelaPassagens.addMouseListener(new MouseAdapter() {
 			@Override
@@ -175,17 +203,18 @@ public class JanelaPrincipal extends JFrame {
 	    passagens.add(p4);
 	}
 
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				JanelaPrincipal janela = new JanelaPrincipal(new Listener() {
-					@Override
-					public void onReserva() { }
-					
-					@Override
-					public void onCompra() { }
-				});
-			}
-		});
-	}
+	
+//	public static void main(String[] args) {
+//		SwingUtilities.invokeLater(new Runnable() {
+//			public void run() {
+//				JanelaPrincipal janela = new JanelaPrincipal(new Listener() {
+//					@Override
+//					public void onReserva() { }
+//					
+//					@Override
+//					public void onCompra() { }
+//				});
+//			}
+//		});
+//	}
 }
