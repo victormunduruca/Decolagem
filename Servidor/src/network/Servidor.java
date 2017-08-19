@@ -40,13 +40,12 @@ public class Servidor extends UnicastRemoteObject implements IRemoto {
 //	        System.out.println("Porta "+porta +" nomeServico " +nomeServico);
 	    	
 			LocateRegistry.createRegistry(porta);
-			Naming.rebind("127.0.0.1/Decolagem"+id, (IRemoto) this);
+			Naming.rebind("192.168.1.8/Decolagem"+id, (IRemoto) this);
 	        System.out.println(" --- Servidor Iniciado --- ");
 	        System.out.println("Porta "+porta +" nomeServico " +id);
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        return false;
-	
 	    }
 	    return true;
 	}

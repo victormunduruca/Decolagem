@@ -66,7 +66,7 @@ public class Main{
 		System.out.println("Insira o id do serviço");
 		String nome = br.readLine();
 		
-		lookUp = (IRemoto) Naming.lookup("127.0.0.1/Decolagem"+nome);
+		lookUp = (IRemoto) Naming.lookup("192.168.1.8/Decolagem"+nome);
 		Main main = new Main();
 	}
 }
