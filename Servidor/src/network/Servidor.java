@@ -30,13 +30,14 @@ public class Servidor extends UnicastRemoteObject implements IRemoto {
         return "Ola";
 	}
 	
-	public boolean iniciar() {
+	public boolean iniciar(int porta, String nomeServico) {
 	    try {
 	
 	    	System.setProperty("java.rmi.server.hostname", "192.168.1.8");
-			LocateRegistry.createRegistry(1099);
-			Naming.bind("DecolagemService", this);
+			LocateRegistry.createRegistry(porta);
+			Naming.bind(nomeServico, this);
 	        System.out.println(" --- Servidor Iniciado --- ");
+	        System.out.println("Porta "+porta +" nomeServico " +nomeServico);
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        return false;

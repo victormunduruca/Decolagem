@@ -1,13 +1,14 @@
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 
-import model.Trecho;
 import network.IRemoto;
 import view.JanelaPrincipal;
 import view.JanelaPrincipal.Listener;
@@ -60,8 +61,14 @@ public class Main{
 		}
 		
 	}
-	public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException {
-		lookUp = (IRemoto) Naming.lookup("rmi://192.168.1.8:1099/DecolagemService");
+	public static void main(String[] args) throws NotBoundException, NumberFormatException, IOException {
+		System.out.println("Insira a porta");
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int porta = Integer.parseInt(br.readLine());
+		System.out.println("Insira o nome do serviço");
+		String nome = br.readLine();
+		
+		lookUp = (IRemoto) Naming.lookup("rmi://192.168.1.8:"+porta+"/"+nome);
 		Main main = new Main();
 	}
 }

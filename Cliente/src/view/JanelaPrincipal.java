@@ -183,11 +183,7 @@ public class JanelaPrincipal extends JFrame {
 	    colunas.addElement("Destino");
 		
 //		// Passagens
-	    Vector<String> p1 = new Vector<String>();
-	    p1.addElement("Azul");
-	    p1.addElement("Bahia");
-	    p1.addElement("Rio de Janeiro");
-	    passagens.add(p1);
+;
 //	    
 //	    Vector<String> p2 = new Vector<String>();
 //	    p2.addElement("Rosa");
