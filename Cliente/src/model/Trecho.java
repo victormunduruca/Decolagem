@@ -10,6 +10,9 @@ public class Trecho implements Serializable{
 	private String inicio;
 	private String fim;
 	
+	private boolean comprado = false;
+	private String nomeComprador = "";
+	
 	
 	public Trecho(String inicio, String fim) {
 		this.inicio = inicio;

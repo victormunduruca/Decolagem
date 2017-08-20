@@ -51,15 +51,14 @@ public class Main{
 				e.printStackTrace();
 			}
 		}
-		
 	}
 	
 	public static void main(String[] args) throws NotBoundException, NumberFormatException, IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		System.out.println("Insira o id do servi�o");
-		String nome = br.readLine();
+		System.out.println("Insira o nome do servico:");
+		String nome = br.readLine(); 
 		
-		lookUp = (IRemoto) Naming.lookup("192.168.1.8/Decolagem" + nome);
-		Main main = new Main(); 
+		lookUp = (IRemoto) Naming.lookup("localhost/Decolagem" + nome);
+		Main main = new Main();  
 	}
 }
