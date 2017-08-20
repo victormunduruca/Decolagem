@@ -1,6 +1,7 @@
-/network/
-/model/
-/view/
-/Main$1$1.class
 /Main$1.class
 /Main$PrincipalCallback.class
+/Main.class
+/controller/
+/model/
+/network/
+/view/
