@@ -13,4 +13,5 @@ public interface IRemoto extends Remote {
 
     public Companhia getCompanhia() throws RemoteException;
     
+    public void testeLamport(float relogioMsg) throws RemoteException;
 }

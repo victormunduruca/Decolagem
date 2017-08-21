@@ -1,12 +1,17 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -25,8 +30,8 @@ import model.Trecho;
 
 public class JanelaPrincipal extends JFrame { 
 
-	public interface Listener { // TODO
-		void onCompra();
+	public interface Listener {
+		void onCompra(List<Trecho> passagens);
 		void onReserva();
 		void onRecarregar();
 	}
@@ -38,6 +43,8 @@ public class JanelaPrincipal extends JFrame {
     private Vector<Vector> carrinho = new Vector<Vector>();
 
 	private DefaultTableModel modelPassagens, modelCarrinho;
+	private TextField nomeUsuario;
+	private JButton btnRecarregar, btnComprar, btnReservar;
 	
 	private Listener listener;
 
@@ -46,29 +53,29 @@ public class JanelaPrincipal extends JFrame {
 		this.listener = listener;
 		iniciar();
 	}
-	//XXX
-	JLabel lblNewLabel;
+
 	private void iniciar() {
 		
 		carregar();
 		
-//		setLookAndFeel();
+		//setLookAndFeel();
 
 		JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		toolbar.add(new JButton("Comprar"));
-		toolbar.add(new JButton("Reservar"));
 
 		getContentPane().add(toolbar, BorderLayout.NORTH);
 		
-		JButton btnRecarregar = new JButton("Recarregar");
-		btnRecarregar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				listener.onRecarregar();
-			}
-		});
+		nomeUsuario = new TextField("User" + new Random().nextInt(100));
+		nomeUsuario.setColumns(15);
+		toolbar.add(nomeUsuario);
+		
+		btnComprar = new JButton("Comprar");
+		toolbar.add(btnComprar);
+		
+		btnReservar = new JButton("Reservar");
+		toolbar.add(btnReservar);
+		
+		btnRecarregar = new JButton("Recarregar");
 		toolbar.add(btnRecarregar);
-		
-		
 
 		JPanel painel = new JPanel();
 		painel.setLayout(new GridLayout(1, 2));
@@ -108,34 +115,57 @@ public class JanelaPrincipal extends JFrame {
 		setSize(550, 550);
 		setVisible(true);
 		
-		lblNewLabel = new JLabel("New label");
-		toolbar.add(lblNewLabel);
-		
 		setListeners();
 	}
 	public void atualizaTrechos(Companhia companhia) {
-		//TODO apagar conte�do pr�vio das tabelas
-		System.out.println("Vai atualizar o trecho da companhia: " +companhia.getNomeCompanhia());
-		for(Trecho trecho: companhia.getTrechos()) {
+		modelCarrinho.getDataVector().removeAllElements();
+		modelPassagens.getDataVector().removeAllElements();
+		//System.out.println("Vai atualizar o trecho da companhia: " +companhia.getNomeCompanhia());
+		
+		for (Trecho trecho: companhia.getTrechos()) {
 			passagens.add(toRow(companhia.getNomeCompanhia(), trecho.getInicio(), trecho.getFim()));
 		}
+		modelCarrinho.fireTableDataChanged();
 		modelPassagens.fireTableDataChanged();
 	}
-	//XXX
-	public void setTexto(String texto) {
-		System.out.println("Setou o texto: " +texto);
-		lblNewLabel.setText(texto);;
-	}
+
 	private void setListeners() {
+		btnRecarregar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				listener.onRecarregar();
+			}
+		});
+		
+		btnComprar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				List<Trecho> trechos = new ArrayList<Trecho>();
+				int total = tabelaCarrinho.getModel().getRowCount();
+				for (int i = 0; i < total; i++) {
+					trechos.add(new Trecho(
+						"" + tabelaCarrinho.getModel().getValueAt(i, 0),
+						"" + tabelaCarrinho.getModel().getValueAt(i, 1),
+						"" + tabelaCarrinho.getModel().getValueAt(i, 2)
+					));
+				}
+				listener.onCompra(trechos);
+			}
+		});
+		
+		btnReservar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				listener.onReserva();
+			}
+		});
+		
 		tabelaPassagens.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					int index = tabelaPassagens.getSelectedRow();
 					
-					System.out.print("Companhia: " + tabelaPassagens.getModel().getValueAt(index, 0));
-					System.out.print("|Orig: " + tabelaPassagens.getModel().getValueAt(index, 1));
-					System.out.println("|Dest: " + tabelaPassagens.getModel().getValueAt(index, 2));
+					//System.out.print("Companhia: " + tabelaPassagens.getModel().getValueAt(index, 0));
+					//System.out.print("|Orig: " + tabelaPassagens.getModel().getValueAt(index, 1));
+					//System.out.println("|Dest: " + tabelaPassagens.getModel().getValueAt(index, 2));
 					
 					carrinho.add(toRow(
 						"" + tabelaPassagens.getModel().getValueAt(index, 0),
@@ -143,7 +173,36 @@ public class JanelaPrincipal extends JFrame {
 						"" + tabelaPassagens.getModel().getValueAt(index, 2)
 						)
 					);
-					modelCarrinho.fireTableDataChanged(); // Notificar a mudanca da tabela 
+					modelPassagens.removeRow(index);
+					
+					// Notificar a mudanca da tabela
+					modelPassagens.fireTableDataChanged();
+					modelCarrinho.fireTableDataChanged(); 
+				}
+			}
+		});
+		
+		tabelaCarrinho.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					int index = tabelaCarrinho.getSelectedRow();
+					
+					//System.out.print("Companhia: " + tabelaPassagens.getModel().getValueAt(index, 0));
+					//System.out.print("|Orig: " + tabelaPassagens.getModel().getValueAt(index, 1));
+					//System.out.println("|Dest: " + tabelaPassagens.getModel().getValueAt(index, 2));
+					
+					passagens.add(toRow(
+						"" + tabelaCarrinho.getModel().getValueAt(index, 0),
+						"" + tabelaCarrinho.getModel().getValueAt(index, 1),
+						"" + tabelaCarrinho.getModel().getValueAt(index, 2)
+						)
+					);
+					modelCarrinho.removeRow(index);
+					
+					// Notificar a mudanca da tabela
+					modelPassagens.fireTableDataChanged();
+					modelCarrinho.fireTableDataChanged(); 
 				}
 			}
 		});
@@ -168,7 +227,7 @@ public class JanelaPrincipal extends JFrame {
 // }
 	
 	private Vector<String> toRow(String c, String o, String d) {
-		System.out.println(c+o+d);
+		//System.out.println(c+o+d);
 	    Vector<String> v = new Vector<String>();
 	    v.addElement(c);
 	    v.addElement(o);

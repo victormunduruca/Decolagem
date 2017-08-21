@@ -9,14 +9,15 @@ import model.Companhia;
 import model.Trecho;
 
 public class ControllerServidor {
-private static Companhia companhia;
+	private static Companhia companhia;
+	private int id;
 	
-	
-	public ControllerServidor() {
+	public ControllerServidor(int id) {
+		this.id = id;
 		companhia = new Companhia();
 	}
 	public String leituraConfiguracao() throws IOException {
-		File file = new File("configuracao.txt");
+		File file = new File("configuracao"+id+".txt");
 		FileReader fileReader = new FileReader(file);
 		BufferedReader leitura = new BufferedReader(fileReader);
 		StringBuilder texto = new StringBuilder();
@@ -42,14 +43,17 @@ private static Companhia companhia;
 			companhia.addNovoTrecho(infoTrechos[0], infoTrechos[1]);
 		}
 	}
-	public static void main(String[] args) throws IOException {
-		ControllerServidor c = new ControllerServidor();
-		c.configuraServidor();
-		for(Trecho t : companhia.getTrechos()) {
-			System.out.println("" +t);
-		}
-	}
+//	public static void main(String[] args) throws IOException {
+//		ControllerServidor c = new ControllerServidor();
+//		c.configuraServidor();
+//		for(Trecho t : companhia.getTrechos()) {
+//			System.out.println("" +t);
+//		}
+//	}
 	public static Companhia getCompanhia() {
 		return companhia;
+	}
+	public int getId() {
+		return id;
 	}
 }
