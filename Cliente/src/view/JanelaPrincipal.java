@@ -133,7 +133,7 @@ public class JanelaPrincipal extends JFrame {
 		
 		String status = "";
 		for (Trecho trecho: trechos) {
-			System.out.println("Lista de espera de " +trecho.getCompanhia()+trecho.getInicio()+ " tamanho:" + trecho.getListaEspera().size() + " " + trecho.getStatus());
+			System.out.println("Lista de espera de " +trecho.getCompanhia()+trecho.getInicio()+ " tamanho:" + trecho.getTamanhoListaEspera() + " " + trecho.getStatus());
 //			if (trecho.getStatus().equals(Status.COMPRADO)) {
 //				status = (trecho.getNomeComprador() != null && trecho.getNomeComprador().equals(nomeUsuario.getText())) 
 //						? Status.COMPRADO : Status.INDISPONIVEL;	
@@ -148,12 +148,12 @@ public class JanelaPrincipal extends JFrame {
 //			}
 			if (trecho.getStatus().equals(Status.COMPRADO)) {
 				System.out.println("Entrou no if");
-				//System.out.println("Lista de espera de " +trecho.getCompanhia()+trecho.getInicio()+ " tamanho>>>:" + trecho.getListaEspera().size());
 				if(trecho.getNomeComprador() != null && trecho.getNomeComprador().equals(nomeUsuario.getText())) { 
 					status = Status.COMPRADO;
 				} else if (trecho.getPosicao(nomeUsuario.getText()) != -1) {
-					System.err.println("Entrou em setar nome");
 					status = Status.ESPERA + "(" + trecho.getPosicao(nomeUsuario.getText()) + ")";
+				} else {
+					status = Status.INDISPONIVEL;
 				}
 			} else { 
 				status = trecho.getStatus();

@@ -1,10 +1,12 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import controller.Controller;
 
+import controller.Controller;
+import network.IRemoto;
 import network.Servidor;
 
 
@@ -45,25 +47,19 @@ public class Main {
 			System.out.println("Resp: " + ret); 
 		}*/
 		
-		/*while(true) {
+		while(true) {
 			System.out.println("aperte um local, dois envia, 3 ");
 			switch (Integer.parseInt(br.readLine())) {
 			case 1:
-				servidor.getRelogioLamport().eventoLocal();
-				//servidor.testeServidores(1+"");
+				System.out.println("Tamanho da lista de espera de: "+servidor.getTrechos().get(0).getInicio()+" = "+servidor.getTrechos().get(0).getTamanhoListaEspera());
 				break;
-			case 2:
-				servidor.getRelogioLamport().eventoLocal();
-				System.out.println("Lamport antes de enviar a msg" +servidor.getRelogioLamport().getRelogio());
-				servidor.testeServidoresLamport();
-				break;
-			case 3:
-				System.out.println("RelogioLamport = " +servidor.getRelogioLamport().getRelogio());
-				break;
+			case 2: 
+				IRemoto lookUp = (IRemoto) Naming.lookup("localhost/Decolagem" + 1);
+				System.out.println("Tamanho da lista de espera " +lookUp.getTrechos().get(0).getInicio()+lookUp.getTrechos().get(0).getCompanhia()+"no servidor um: " +lookUp.getTrechos().get(0).getTamanhoListaEspera());
 			default:
 				break;
 			}
-		}*/
+		}
 	}
 
 }

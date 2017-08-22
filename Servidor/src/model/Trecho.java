@@ -21,7 +21,7 @@ public class Trecho implements Serializable {
 	private String status = Status.DISPONIVEL;
 	private String nomeComprador = "";
 	
-	private static HashMap<String, Integer> listaEspera = new HashMap<String, Integer>();
+	private HashMap<String, Integer> listaEspera = new HashMap<String, Integer>();
 	
 	
 	public Trecho(String companhia, String inicio, String fim) {
@@ -39,7 +39,9 @@ public class Trecho implements Serializable {
 	public int getPosicao(String usuario) {
 		return listaEspera.get(usuario) != null ? listaEspera.get(usuario) : -1;
 	}
-	
+	public int getTamanhoListaEspera() {
+		return listaEspera.size();
+	}
 	public HashMap<String, Integer> getListaEspera() {
 		return listaEspera;
 	}
