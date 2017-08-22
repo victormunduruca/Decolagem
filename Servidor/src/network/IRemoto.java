@@ -11,9 +11,9 @@ public interface IRemoto extends Remote {
 	
     public String teste(String str) throws RemoteException;
     
-	public void testeLamport(float relogio) throws RemoteException;
+	
     
-    public void testeServidoresLamport() throws RemoteException;
+    
     
     // -- API utilizada na comunicacao entre os servidores distribuidos
     

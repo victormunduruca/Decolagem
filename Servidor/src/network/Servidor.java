@@ -17,28 +17,19 @@ import controller.Controller.RegiaoCritica;
 public class Servidor extends UnicastRemoteObject implements IRemoto {
 	
 	private static final long serialVersionUID = 1L;
-	private RelogioLamport relogio;
+
 	public Servidor() throws RemoteException {
 		super();
-		relogio = new RelogioLamport(Controller.getInstance().getId());
 	} 
 	
 	@Override
 	public String teste(String str) throws RemoteException {
-		relogio.eventoLocal();
         System.err.println("Servidor.teste() nova requisicao: " + str);
         return "Ola";
 	}
 	
 	public boolean iniciar(int porta, int id) {
-	    try {
-	
-	    	//System.setProperty("java.rmi.server.hostname", "127.0.0.1");
-//			LocateRegistry.createRegistry(porta);
-//			Naming.rebind(nomeServico, new Servidor());
-//	        System.out.println(" --- Servidor Iniciado --- ");
-//	        System.out.println("Porta "+porta +" nomeServico " +nomeServico);
-	    	
+	    try {   	
 			LocateRegistry.createRegistry(porta);
 			Naming.rebind("localhost/Decolagem" + id, (IRemoto) this);
 	        System.out.println(" --- Servidor Iniciado --- ");
@@ -49,32 +40,7 @@ public class Servidor extends UnicastRemoteObject implements IRemoto {
 	    }
 	    return true;
 	}
-	public void testeServidores(String id) throws MalformedURLException, RemoteException, NotBoundException {
-		IRemoto lookUp = null;
-		 for(int i = 1; i <= 2; i++) {
-			if(i != Controller.getInstance().getId()) {
-				 lookUp = (IRemoto) Naming.lookup("192.168.1.8/Decolagem"+i);
-				 lookUp.teste("EITAMOLEQUE");
-			}
-		 }
-	}
-	
-	@Override
-	public void testeServidoresLamport() throws RemoteException {
-		IRemoto lookUp = null;
-		 for(int i = 1; i <= 2; i++) {
-			if(i != Controller.getInstance().getId()) {
-				 try {
-					lookUp = (IRemoto) Naming.lookup("192.168.1.8/Decolagem"+i);
-				} catch (MalformedURLException | NotBoundException e) {
-					e.printStackTrace();
-				}
-				 lookUp.testeLamport(relogio.getRelogio());
-			}
-		 }
-		
-	}
-	
+			
 	@Override
 	public List<Trecho> requisitarTrechos() throws RemoteException {
  		List<Trecho> trechos = new ArrayList<Trecho>();
@@ -99,15 +65,6 @@ public class Servidor extends UnicastRemoteObject implements IRemoto {
 		}
  		
 		return trechos;
-	}
-
-	@Override
-	public void testeLamport(float relogioMsg) throws RemoteException {
-		relogio.eventoMsg(relogioMsg);
-	}
-
-	public RelogioLamport getRelogioLamport() {
-		return relogio;
 	}
 
 	@Override
@@ -229,7 +186,7 @@ public class Servidor extends UnicastRemoteObject implements IRemoto {
 	@Override
 	public List<Trecho> reservar(String usuario, List<Trecho> passagens)
 			throws RemoteException {
-		
+		System.out.println("CHAMOU O RESERVAR E CHEGOU NO SERVER");
 		Controller.getInstance().reservar(usuario, passagens);
 		
 		IRemoto remoto;

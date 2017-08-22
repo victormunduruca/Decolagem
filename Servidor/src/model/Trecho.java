@@ -23,6 +23,7 @@ public class Trecho implements Serializable {
 	
 	private static HashMap<String, Integer> listaEspera = new HashMap<String, Integer>();
 	
+	
 	public Trecho(String companhia, String inicio, String fim) {
 		this.nomeCompanhia = companhia;
 		this.inicio = inicio;
@@ -30,7 +31,9 @@ public class Trecho implements Serializable {
 	}
 	
 	public void addListaEspera(String usuario) {
+		System.err.println("Adicionou o usuario " +usuario+ "a lista de espera (dentro de trecho)");
 		listaEspera.put(usuario, listaEspera.size() + 1); // Posicao
+		System.out.println("A posicao do usuario foi: " +this.getPosicao(usuario));
 	}
 	
 	public int getPosicao(String usuario) {

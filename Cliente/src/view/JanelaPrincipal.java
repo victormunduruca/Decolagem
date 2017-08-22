@@ -131,18 +131,32 @@ public class JanelaPrincipal extends JFrame {
 		modelCarrinho.getDataVector().removeAllElements();
 		modelPassagens.getDataVector().removeAllElements();
 		
-		String status;
+		String status = "";
 		for (Trecho trecho: trechos) {
+			System.out.println("Lista de espera de " +trecho.getCompanhia()+trecho.getInicio()+ " tamanho:" + trecho.getListaEspera().size() + " " + trecho.getStatus());
+//			if (trecho.getStatus().equals(Status.COMPRADO)) {
+//				status = (trecho.getNomeComprador() != null && trecho.getNomeComprador().equals(nomeUsuario.getText())) 
+//						? Status.COMPRADO : Status.INDISPONIVEL;	
+//			} else {
+//				System.out.println("Lista de espera de " +trecho.getCompanhia()+trecho.getInicio()+ " tamanho>>>:" + trecho.getListaEspera().size());
+//				if (trecho.getPosicao(nomeUsuario.getText()) != -1) {
+//					System.err.println("Entrou em setar nome");
+//					status = Status.ESPERA + "(" + trecho.getPosicao(nomeUsuario.getText()) + ")";
+//				} else {
+//					status = trecho.getStatus();
+//				}
+//			}
 			if (trecho.getStatus().equals(Status.COMPRADO)) {
-				status = (trecho.getNomeComprador() != null && trecho.getNomeComprador().equals(nomeUsuario.getText())) 
-						? Status.COMPRADO : Status.INDISPONIVEL;	
-			} else {
-				System.out.println("Lista de espera tamanho>>>:" + trecho.getListaEspera().size());
-				if (trecho.getPosicao(nomeUsuario.getText()) != -1) {
+				System.out.println("Entrou no if");
+				//System.out.println("Lista de espera de " +trecho.getCompanhia()+trecho.getInicio()+ " tamanho>>>:" + trecho.getListaEspera().size());
+				if(trecho.getNomeComprador() != null && trecho.getNomeComprador().equals(nomeUsuario.getText())) { 
+					status = Status.COMPRADO;
+				} else if (trecho.getPosicao(nomeUsuario.getText()) != -1) {
+					System.err.println("Entrou em setar nome");
 					status = Status.ESPERA + "(" + trecho.getPosicao(nomeUsuario.getText()) + ")";
-				} else {
-					status = trecho.getStatus();
 				}
+			} else { 
+				status = trecho.getStatus();
 			}
 			passagens.add(toRow(trecho.getCompanhia(), 
 					trecho.getInicio(), trecho.getFim(), status));

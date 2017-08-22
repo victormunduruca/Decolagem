@@ -55,12 +55,16 @@ public class Controller {
 	}
 	
 	public synchronized void reservar(String usuario, List<Trecho> trechos) {
+		System.out.println("RESERVAR CHEGOU NO CONTROLLER");
 		Trecho trecho;
 		for (Trecho t : trechos) {
 			trecho = companhia.getTrechos().get(t.getInicio() + t.getFim());
+			System.out.println("DENTRO DO FOR, TRECHO >> "+trecho.getInicio());
 			try {
 				if (trecho != null && getId() == Integer.valueOf(t.getCompanhia())) {
+					System.out.println("ENTROU NO PRIMEIRO IF");
 					if (!trecho.getStatus().equals(Trecho.Status.DISPONIVEL)) {
+						System.err.println("Reservar() chamou add na lista");
 						trecho.addListaEspera(usuario);
 					}
 				}
@@ -136,7 +140,6 @@ public class Controller {
 		}
 		leitura.close();
 		fileReader.close();
-		System.out.println("EU LI ISSO: " +texto.toString());
 		return texto.toString();
 	}
 	
