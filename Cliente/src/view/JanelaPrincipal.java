@@ -1,7 +1,6 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.TextField;
@@ -17,23 +16,24 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-import model.Companhia;
 import model.Trecho;
+import model.Trecho.Status;
 
 //import org.pushingpixels.substance.api.skin.SubstanceNebulaBrickWallLookAndFeel;
 
 public class JanelaPrincipal extends JFrame { 
 
+	private static final long serialVersionUID = 1L;
+
 	public interface Listener {
-		void onCompra(List<Trecho> passagens);
-		void onReserva();
-		void onRecarregar();
+		void onCompra(String usuario, List<Trecho> passagens);
+		void onReserva(String usuario, List<Trecho> trechos);
+		void onRecarregar(); 
 	}
 
 	private JTable tabelaPassagens, tabelaCarrinho;
@@ -74,13 +74,18 @@ public class JanelaPrincipal extends JFrame {
 		btnReservar = new JButton("Reservar");
 		toolbar.add(btnReservar);
 		
-		btnRecarregar = new JButton("Recarregar");
+		btnRecarregar = new JButton("Atualizar");
 		toolbar.add(btnRecarregar);
 
 		JPanel painel = new JPanel();
 		painel.setLayout(new GridLayout(1, 2));
 
 		modelPassagens = new DefaultTableModel(passagens, colunas) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
@@ -88,6 +93,11 @@ public class JanelaPrincipal extends JFrame {
 		};
 
 		modelCarrinho = new DefaultTableModel(carrinho, colunas) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
@@ -117,16 +127,46 @@ public class JanelaPrincipal extends JFrame {
 		
 		setListeners();
 	}
-	public void atualizaTrechos(Companhia companhia) {
+	public void atualizaTrechos(List<Trecho> trechos) {
 		modelCarrinho.getDataVector().removeAllElements();
 		modelPassagens.getDataVector().removeAllElements();
-		//System.out.println("Vai atualizar o trecho da companhia: " +companhia.getNomeCompanhia());
 		
-		for (Trecho trecho: companhia.getTrechos()) {
-			passagens.add(toRow(companhia.getNomeCompanhia(), trecho.getInicio(), trecho.getFim()));
+		String status;
+		for (Trecho trecho: trechos) {
+			if (trecho.getStatus().equals(Status.COMPRADO)) {
+				status = (trecho.getNomeComprador() != null && trecho.getNomeComprador().equals(nomeUsuario.getText())) 
+						? Status.COMPRADO : Status.INDISPONIVEL;	
+			} else {
+				System.out.println("Lista de espera tamanho>>>:" + trecho.getListaEspera().size());
+				if (trecho.getPosicao(nomeUsuario.getText()) != -1) {
+					status = Status.ESPERA + "(" + trecho.getPosicao(nomeUsuario.getText()) + ")";
+				} else {
+					status = trecho.getStatus();
+				}
+			}
+			passagens.add(toRow(trecho.getCompanhia(), 
+					trecho.getInicio(), trecho.getFim(), status));
 		}
 		modelCarrinho.fireTableDataChanged();
 		modelPassagens.fireTableDataChanged();
+	}
+	
+	public void atualizaCarrinho(List<Trecho> trechos) {
+		modelCarrinho.getDataVector().removeAllElements();
+		//System.out.println("Vai atualizar o trecho da companhia: " +companhia.getNomeCompanhia());
+		
+		String status;
+		for (Trecho trecho: trechos) {
+			if (trecho.getStatus().equals(Status.COMPRADO)) {
+				status = (trecho.getNomeComprador() != null && trecho.getNomeComprador().equals(nomeUsuario.getText())) 
+						? Status.COMPRADO : Status.INDISPONIVEL;	
+			} else {
+				status = trecho.getStatus();
+			}
+			carrinho.add(toRow(trecho.getCompanhia(), 
+					trecho.getInicio(), trecho.getFim(), status));
+		}
+		modelCarrinho.fireTableDataChanged();
 	}
 
 	private void setListeners() {
@@ -147,13 +187,22 @@ public class JanelaPrincipal extends JFrame {
 						"" + tabelaCarrinho.getModel().getValueAt(i, 2)
 					));
 				}
-				listener.onCompra(trechos);
+				listener.onCompra(nomeUsuario.getText().toString(), trechos);
 			}
 		});
 		
 		btnReservar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				listener.onReserva();
+				List<Trecho> trechos = new ArrayList<Trecho>();
+				int total = tabelaCarrinho.getModel().getRowCount();
+				for (int i = 0; i < total; i++) {
+					trechos.add(new Trecho(
+						"" + tabelaCarrinho.getModel().getValueAt(i, 0),
+						"" + tabelaCarrinho.getModel().getValueAt(i, 1),
+						"" + tabelaCarrinho.getModel().getValueAt(i, 2)
+					));
+				}
+				listener.onReserva(nomeUsuario.getText().toString(), trechos);
 			}
 		});
 		
@@ -163,14 +212,13 @@ public class JanelaPrincipal extends JFrame {
 				if (e.getClickCount() == 2) {
 					int index = tabelaPassagens.getSelectedRow();
 					
-					//System.out.print("Companhia: " + tabelaPassagens.getModel().getValueAt(index, 0));
-					//System.out.print("|Orig: " + tabelaPassagens.getModel().getValueAt(index, 1));
-					//System.out.println("|Dest: " + tabelaPassagens.getModel().getValueAt(index, 2));
+					// if (!tabelaPassagens.getModel().getValueAt(index, 3).toString().equals(Status.DISPONIVEL)) return;
 					
 					carrinho.add(toRow(
 						"" + tabelaPassagens.getModel().getValueAt(index, 0),
 						"" + tabelaPassagens.getModel().getValueAt(index, 1),
-						"" + tabelaPassagens.getModel().getValueAt(index, 2)
+						"" + tabelaPassagens.getModel().getValueAt(index, 2),
+						"" + tabelaPassagens.getModel().getValueAt(index, 3)
 						)
 					);
 					modelPassagens.removeRow(index);
@@ -188,14 +236,11 @@ public class JanelaPrincipal extends JFrame {
 				if (e.getClickCount() == 2) {
 					int index = tabelaCarrinho.getSelectedRow();
 					
-					//System.out.print("Companhia: " + tabelaPassagens.getModel().getValueAt(index, 0));
-					//System.out.print("|Orig: " + tabelaPassagens.getModel().getValueAt(index, 1));
-					//System.out.println("|Dest: " + tabelaPassagens.getModel().getValueAt(index, 2));
-					
 					passagens.add(toRow(
 						"" + tabelaCarrinho.getModel().getValueAt(index, 0),
 						"" + tabelaCarrinho.getModel().getValueAt(index, 1),
-						"" + tabelaCarrinho.getModel().getValueAt(index, 2)
+						"" + tabelaCarrinho.getModel().getValueAt(index, 2),
+						"" + tabelaPassagens.getModel().getValueAt(index, 3)
 						)
 					);
 					modelCarrinho.removeRow(index);
@@ -226,12 +271,12 @@ public class JanelaPrincipal extends JFrame {
 //        }
 // }
 	
-	private Vector<String> toRow(String c, String o, String d) {
-		//System.out.println(c+o+d);
+	private Vector<String> toRow(String c, String o, String d, String s) {
 	    Vector<String> v = new Vector<String>();
 	    v.addElement(c);
 	    v.addElement(o);
 	    v.addElement(d);
+	    v.addElement(s);
 	    return v;
 	}
 	
@@ -240,41 +285,6 @@ public class JanelaPrincipal extends JFrame {
 	    colunas.addElement("Companhia");
 	    colunas.addElement("Origem");
 	    colunas.addElement("Destino");
-		
-//		// Passagens
-;
-//	    
-//	    Vector<String> p2 = new Vector<String>();
-//	    p2.addElement("Rosa");
-//	    p2.addElement("São Paulo");
-//	    p2.addElement("Acre");
-//	    passagens.add(p2);
-//	    
-//	    Vector<String> p3 = new Vector<String>();
-//	    p3.addElement("Verde");
-//	    p3.addElement("Ceará");
-//	    p3.addElement("Espírito Santo");
-//	    passagens.add(p3);
-//	    
-//	    Vector<String> p4 = new Vector<String>();
-//	    p4.addElement("Amarelo");
-//	    p4.addElement("Ceará");
-//	    p4.addElement("Brasília Santo");
-//	    passagens.add(p4);
+	    colunas.addElement("Status");
 	}
-
-	
-//	public static void main(String[] args) {
-//		SwingUtilities.invokeLater(new Runnable() {
-//			public void run() {
-//				JanelaPrincipal janela = new JanelaPrincipal(new Listener() {
-//					@Override
-//					public void onReserva() { }
-//					
-//					@Override
-//					public void onCompra() { }
-//				});
-//			}
-//		});
-//	}
 }

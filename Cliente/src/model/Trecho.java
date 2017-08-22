@@ -1,8 +1,16 @@
 package model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
-public class Trecho implements Serializable{
+public class Trecho implements Serializable {
+	
+	public interface Status {
+		String DISPONIVEL = "disponível";
+		String COMPRADO = "comprado";
+		String INDISPONIVEL = "indisponível";
+		String ESPERA = "espera";
+	}
 
 	private static final long serialVersionUID = 1L;
 	private String inicio;
@@ -10,8 +18,10 @@ public class Trecho implements Serializable{
 	
 	private String nomeCompanhia = "";
 	
-	private boolean comprado = false;
+	private String status = Status.DISPONIVEL;
 	private String nomeComprador = "";
+	
+	private static HashMap<String, Integer> listaEspera = new HashMap<String, Integer>();
 	
 	public Trecho(String companhia, String inicio, String fim) {
 		this.nomeCompanhia = companhia;
@@ -19,13 +29,27 @@ public class Trecho implements Serializable{
 		this.fim = fim;
 	}
 	
-	public Trecho(String inicio, String fim) {
-		this.inicio = inicio;
-		this.fim = fim;
-		this.toString();
+	public void addListaEspera(String usuario) {
+		listaEspera.put(usuario, listaEspera.size() + 1); // Posicao
 	}
 	
-	public String geCompanhia() {
+	public int getPosicao(String usuario) {
+		return listaEspera.get(usuario) != null ? listaEspera.get(usuario) : -1;
+	}
+	
+	public HashMap<String, Integer> getListaEspera() {
+		return listaEspera;
+	}
+	
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
+	public String getCompanhia() {
 		return nomeCompanhia;
 	}
 
@@ -33,12 +57,6 @@ public class Trecho implements Serializable{
 		this.nomeCompanhia = nomeCompanhia;
 	}
 
-	public boolean isComprado() {
-		return comprado;
-	}
-	public void setComprado(boolean comprado) {
-		this.comprado = comprado;
-	}
 	public String getNomeComprador() {
 		return nomeComprador;
 	}

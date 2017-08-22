@@ -1,18 +1,16 @@
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.Scanner;
+import controller.Controller;
 
-import network.IRemoto;
 import network.Servidor;
 
 
 public class Main { 
 
+	private static Servidor servidor = null;
 	/**
 	 * @param args
 	 * @throws IOException 
@@ -20,22 +18,25 @@ public class Main {
 	 */
 	public static void main(String[] args) throws IOException, NotBoundException {
 		
-		System.out.println("Insira a porta");
+		System.out.println("Insira a porta para iniciar o servidor");
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		int porta = Integer.parseInt(br.readLine());
 
-		System.out.println("Insira o id");
-		int id = Integer.parseInt(br.readLine());;
-		Servidor servidor = null;
+		System.out.println("Insira o ID para iniciar o servidor");
+		int id = Integer.parseInt(br.readLine());
+		
+		Controller.getInstance().setId(id);
+		Controller.getInstance().configuraServidor();
+		
 		try {
-			servidor = new Servidor(id);
+			servidor = new Servidor();
 			servidor.iniciar(porta, id);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 		
 		// Apenas um teste de comunicacao servidor para servidor
-		/*while(true) {
+		/*while (true) {
 			System.out.println("Entre com o id do servidor: ");
 			String nome = br.readLine();
 			

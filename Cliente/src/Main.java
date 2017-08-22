@@ -8,6 +8,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.List;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import model.Trecho;
@@ -33,17 +34,41 @@ public class Main{
 	//	}
 	private static class PrincipalCallback implements Listener {
 		@Override
-		public void onCompra(List<Trecho> passagens) { 
-			System.out.println("Comprando " + passagens.size() + " passagens");
+		public void onCompra(String usuario, List<Trecho> passagens) { 
+			System.out.println("Comprando " + passagens.size() + " passagens...");
+			try {
+				List<Trecho> passagensIndisponiveis = lookUp.comprar(usuario, passagens);
+				janela.atualizaTrechos(lookUp.getTrechos());
+				if (passagensIndisponiveis.size() > 0) {
+					janela.atualizaCarrinho(passagensIndisponiveis);
+					JOptionPane.showMessageDialog(janela, "Algumas passagens não estão disponíveis para compra.\n " +
+							"Verifique seu carrinho e se desejar, faça uma reserva.");
+				}
+				System.out.println(passagensIndisponiveis.size() + " passagens indisponiveis!");
+			} catch (RemoteException e) {
+				System.err.println("Erro ao comprar as passagens.");
+				JOptionPane.showMessageDialog(janela, "Erro ao comprar as passagens.");
+				//e.printStackTrace();
+			}
 		}
 
 		@Override
-		public void onReserva() { }
+		public void onReserva(String usuario, List<Trecho> trechos) {
+			System.out.println("Reservando " + trechos.size() + " passagens...");
+			try {
+				lookUp.reservar(usuario, trechos);
+				janela.atualizaTrechos(lookUp.getTrechos());
+			} catch (RemoteException e) {
+				System.err.println("Erro ao fazer a reserva das passagens.");
+				JOptionPane.showMessageDialog(janela, "Erro ao fazer a reserva das passagens.");
+				//e.printStackTrace();
+			}
+		}
 
 		@Override
 		public void onRecarregar() { 
 			try {
-				janela.atualizaTrechos(lookUp.getCompanhia());
+				janela.atualizaTrechos(lookUp.getTrechos());
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
@@ -52,10 +77,10 @@ public class Main{
 	
 	public static void main(String[] args) throws NotBoundException, NumberFormatException, IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		System.out.println("Insira o nome do servico:"); 
-		String nome = br.readLine();
+		System.out.println("Insira o ID do servico: "); 
+		String id = br.readLine();
 		
-		lookUp = (IRemoto) Naming.lookup("localhost/Decolagem" + nome);
+		lookUp = (IRemoto) Naming.lookup("localhost/Decolagem" + id);
 		iniciarGui();  
 	}
 	
