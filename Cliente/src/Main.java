@@ -79,8 +79,10 @@ public class Main{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		System.out.println("Insira o ID do servico: "); 
 		String id = br.readLine();
+		System.out.println("Insira o seu IP");
+		String ip = br.readLine();
 		
-		lookUp = (IRemoto) Naming.lookup("localhost/Decolagem" + id);
+		lookUp = (IRemoto) Naming.lookup("rmi://" + ip +":1099/Decolagem" + id);
 		iniciarGui();  
 	}
 	

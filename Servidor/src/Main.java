@@ -19,7 +19,7 @@ public class Main {
 	 * @throws NotBoundException 
 	 */
 	public static void main(String[] args) throws IOException, NotBoundException {
-		
+		String[] ips = new String[4];
 		System.out.println("Insira a porta para iniciar o servidor");
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		int porta = Integer.parseInt(br.readLine());
@@ -27,38 +27,29 @@ public class Main {
 		System.out.println("Insira o ID para iniciar o servidor");
 		int id = Integer.parseInt(br.readLine());
 		
+		System.out.print("Insira o ip do servido conveniado");
+		String ip1 = br.readLine();
+		System.out.println("Insira o id desse servidor");
+		int id1 = Integer.parseInt(br.readLine());
+		
+		System.out.print("Insira o ip do servido conveniado");
+		String ip2 = br.readLine();
+		System.out.println("Insira o id desse servidor");
+		int id2 = Integer.parseInt(br.readLine());
+		
+		
+		ips[id] = "127.0.0.1";
+		ips[id1] = ip1;
+		ips[id2] = ip2;
+		
 		Controller.getInstance().setId(id);
 		Controller.getInstance().configuraServidor();
 		
 		try {
-			servidor = new Servidor();
+			servidor = new Servidor(ips);
 			servidor.iniciar(porta, id);
 		} catch (RemoteException e) {
 			e.printStackTrace();
-		}
-		
-		// Apenas um teste de comunicacao servidor para servidor
-		/*while (true) {
-			System.out.println("Entre com o id do servidor: ");
-			String nome = br.readLine();
-			
-			IRemoto lookUp = (IRemoto) Naming.lookup("localhost/Decolagem" + nome);
-			String ret = lookUp.teste("Oi"); // Enviando um "Oi"
-			System.out.println("Resp: " + ret); 
-		}*/
-		
-		while(true) {
-			System.out.println("aperte um local, dois envia, 3 ");
-			switch (Integer.parseInt(br.readLine())) {
-			case 1:
-				System.out.println("Tamanho da lista de espera de: "+servidor.getTrechos().get(0).getInicio()+" = "+servidor.getTrechos().get(0).getTamanhoListaEspera());
-				break;
-			case 2: 
-				IRemoto lookUp = (IRemoto) Naming.lookup("localhost/Decolagem" + 1);
-				System.out.println("Tamanho da lista de espera " +lookUp.getTrechos().get(0).getInicio()+lookUp.getTrechos().get(0).getCompanhia()+"no servidor um: " +lookUp.getTrechos().get(0).getTamanhoListaEspera());
-			default:
-				break;
-			}
 		}
 	}
 

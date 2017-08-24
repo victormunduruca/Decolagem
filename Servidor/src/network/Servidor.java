@@ -17,9 +17,10 @@ import controller.Controller.RegiaoCritica;
 public class Servidor extends UnicastRemoteObject implements IRemoto {
 	
 	private static final long serialVersionUID = 1L;
-
-	public Servidor() throws RemoteException {
+	private String[] ips;
+	public Servidor(String[] ips) throws RemoteException {
 		super();
+		this.ips = ips;
 	} 
 	
 	@Override
@@ -31,7 +32,7 @@ public class Servidor extends UnicastRemoteObject implements IRemoto {
 	public boolean iniciar(int porta, int id) {
 	    try {   	
 			LocateRegistry.createRegistry(porta);
-			Naming.rebind("localhost/Decolagem" + id, (IRemoto) this);
+			Naming.rebind("Decolagem" + id, (IRemoto) this);
 	        System.out.println(" --- Servidor Iniciado --- ");
 	        System.out.println("Porta " + porta + " nomeServico " + id);
 	    } catch (Exception e) { 
@@ -57,7 +58,7 @@ public class Servidor extends UnicastRemoteObject implements IRemoto {
 			if (i == Controller.getInstance().getId()) continue;
 			IRemoto remoto;
 			try {
-				remoto = (IRemoto) Naming.lookup("localhost/Decolagem" + i);
+				remoto = (IRemoto) Naming.lookup("rmi://" + ips[i] +":1099/Decolagem" + i);
 				trechos.addAll(remoto.requisitarTrechos());
 			} catch (MalformedURLException | NotBoundException e) {
 				System.err.println("Erro ao solicitar entrada na sessao critica. Servidor" + i + " nao disponivel!");
@@ -108,7 +109,7 @@ public class Servidor extends UnicastRemoteObject implements IRemoto {
 		for (int i = 1; i <= Controller.getInstance().getTotalServidores(); i++) {
 			if (i == Controller.getInstance().getId()) continue;
 			try {
-				remoto = (IRemoto) Naming.lookup("localhost/Decolagem" + i);
+				remoto = (IRemoto) Naming.lookup("rmi://" + ips[i] +":1099/Decolagem" + i);
 				remoto.requisitarAcesso(usuario, Controller.getInstance().getClockLamport());
 			} catch (MalformedURLException | NotBoundException e) {
 				System.err.println("Erro ao solicitar entrada na sessao critica. Servidor" + i + " nao disponivel!");
@@ -129,7 +130,7 @@ public class Servidor extends UnicastRemoteObject implements IRemoto {
 		for (int i = 1; i <= Controller.getInstance().getTotalServidores(); i++) { // FIXME Recuperar o total de servidores do controlador
 			if (i == Controller.getInstance().getId()) continue;
 			try {
-				remoto = (IRemoto) Naming.lookup("localhost/Decolagem" + i);
+				remoto = (IRemoto) Naming.lookup("rmi://" + ips[i] +":1099/Decolagem" + i);
 				trechosIndisponiveis.addAll(remoto.requisitarCompra(usuario, passagens)); // Compra as demais passagens e retorna os trechos indisponiveis
 			} catch (MalformedURLException | NotBoundException e) {
 				System.err.println("Erro ao comprar passagens nos demais servidores. Servidor" + i + " nao disponivel!");
@@ -154,7 +155,7 @@ public class Servidor extends UnicastRemoteObject implements IRemoto {
 		for (int i = 1; i <= Controller.getInstance().getTotalServidores(); i++) {
 			if (i == Controller.getInstance().getId()) continue;
 			try {
-				remoto = (IRemoto) Naming.lookup("localhost/Decolagem" + i);
+				remoto = (IRemoto) Naming.lookup("rmi://" + ips[i] +":1099/Decolagem" + i);
 				remoto.requisitarAcesso(usuario, Controller.getInstance().getClockLamport());
 			} catch (MalformedURLException | NotBoundException e) {
 				System.err.println("Erro ao solicitar entrada na sessao critica. Servidor" + i + " nao disponivel!");
@@ -186,14 +187,13 @@ public class Servidor extends UnicastRemoteObject implements IRemoto {
 	@Override
 	public List<Trecho> reservar(String usuario, List<Trecho> passagens)
 			throws RemoteException {
-		System.out.println("CHAMOU O RESERVAR E CHEGOU NO SERVER");
 		Controller.getInstance().reservar(usuario, passagens);
 		
 		IRemoto remoto;
 		for (int i = 1; i <= Controller.getInstance().getTotalServidores(); i++) {
 			if (i == Controller.getInstance().getId()) continue;
 			try {
-				remoto = (IRemoto) Naming.lookup("localhost/Decolagem" + i);
+				remoto = (IRemoto) Naming.lookup("rmi://" + ips[i] +":1099/Decolagem" + i);
 				remoto.requisitarReservar(usuario, passagens);
 			} catch (MalformedURLException | NotBoundException e) {
 				System.err.println("Erro ao solicitar a reserva de passagem. Servidor" + i + " nao disponivel!");
